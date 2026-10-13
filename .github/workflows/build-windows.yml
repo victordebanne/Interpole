@@ -1,0 +1,32 @@
+
+name: Build Windows
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure compiler
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          install: mingw-w64-ucrt-x86_64-gcc
+
+      - name: Compile
+        shell: msys2 {0}
+        run: |
+          gcc *.c -o program.exe -lm
+
+      - name: Upload executable
+        uses: actions/upload-artifact@v4
+        with:
+          name: program-windows
+          path: program.exe
